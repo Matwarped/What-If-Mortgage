@@ -1,0 +1,201 @@
+name: Advanced Build and Deploy to S3
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - staging
+        - production
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    outputs:
+      build-hash: ${{ steps.build-info.outputs.hash }}
+      
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Lint code
+      run: npm run lint --if-present
+      
+    - name: Run tests
+      run: npm test --if-present
+      
+    - name: Build project
+      run: npm run build
+      
+    - name: Generate build info
+      id: build-info
+      run: |
+        echo "hash=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        echo "Build hash: $(git rev-parse --short HEAD)"
+        
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-files
+        path: dist/
+        retention-days: 7
+        
+    - name: Upload build info
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-info
+        path: |
+          package.json
+          package-lock.json
+        retention-days: 7
+
+  deploy-staging:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging')
+    environment: staging
+    
+    steps:
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: build-files
+        path: dist/
+        
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+        
+    - name: Deploy to S3 Staging
+      run: |
+        aws s3 sync dist/ s3://${{ secrets.S3_BUCKET_NAME_STAGING }} \
+          --delete \
+          --cache-control max-age=300 \
+          --metadata-directive REPLACE \
+          --metadata "build-hash=${{ needs.build.outputs.build-hash }},deployed-at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          
+    - name: Invalidate CloudFront Staging
+      if: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID_STAGING }}
+      run: |
+        aws cloudfront create-invalidation \
+          --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID_STAGING }} \
+          --paths "/*"
+
+  deploy-production:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production')
+    environment: production
+    
+    steps:
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: build-files
+        path: dist/
+        
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+        
+    - name: Deploy to S3 Production
+      run: |
+        aws s3 sync dist/ s3://${{ secrets.S3_BUCKET_NAME_PRODUCTION }} \
+          --delete \
+          --cache-control max-age=31536000 \
+          --exclude "*.html" \
+          --metadata-directive REPLACE \
+          --metadata "build-hash=${{ needs.build.outputs.build-hash }},deployed-at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          
+        # HTML files with shorter cache
+        aws s3 sync dist/ s3://${{ secrets.S3_BUCKET_NAME_PRODUCTION }} \
+          --delete \
+          --cache-control max-age=300 \
+          --exclude "*" \
+          --include "*.html" \
+          --metadata-directive REPLACE \
+          --metadata "build-hash=${{ needs.build.outputs.build-hash }},deployed-at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          
+    - name: Invalidate CloudFront Production
+      if: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID_PRODUCTION }}
+      run: |
+        aws cloudfront create-invalidation \
+          --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID_PRODUCTION }} \
+          --paths "/*"
+          
+    - name: Create GitHub Release
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ github.run_number }}
+        release_name: Release v${{ github.run_number }}
+        body: |
+          ## What If Mortgage - Release v${{ github.run_number }}
+          
+          **Build Hash:** ${{ needs.build.outputs.build-hash }}
+          **Deployed:** $(date -u +%Y-%m-%dT%H:%M:%SZ)
+          
+          ### Changes
+          ${{ github.event.head_commit.message }}
+          
+        draft: false
+        prerelease: false
+
+  notify:
+    needs: [build, deploy-staging, deploy-production]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: Deployment notification
+      run: |
+        if [[ "${{ needs.build.result }}" == "success" ]]; then
+          echo "✅ Build completed successfully"
+        else
+          echo "❌ Build failed"
+        fi
+        
+        if [[ "${{ needs.deploy-staging.result }}" == "success" ]]; then
+          echo "✅ Staging deployment completed"
+        elif [[ "${{ needs.deploy-staging.result }}" == "skipped" ]]; then
+          echo "⏭️ Staging deployment skipped"
+        else
+          echo "❌ Staging deployment failed"
+        fi
+        
+        if [[ "${{ needs.deploy-production.result }}" == "success" ]]; then
+          echo "✅ Production deployment completed"
+        elif [[ "${{ needs.deploy-production.result }}" == "skipped" ]]; then
+          echo "⏭️ Production deployment skipped"
+        else
+          echo "❌ Production deployment failed"
+        fi
