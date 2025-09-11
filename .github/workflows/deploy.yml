@@ -29,6 +29,11 @@ jobs:
       
     - name: Build project
       run: npm run build
+
+    - name: Update GTM ID
+      if: ${{ vars.GTM_ID }}
+      run: |        
+        sed -e "s/GTM_ID/${{ vars.GTM_ID }}/g" dist/index.html
       
     - name: Run tests (if available)
       run: npm test --if-present
@@ -53,6 +58,9 @@ jobs:
       run: |
         echo "🚀 Deployment completed successfully!"
         echo "📦 Built files synced to S3 bucket: ${{ vars.S3_BUCKET_NAME }}"
+        if [[ -n "${{ vars.GTM_ID }}" ]]; then
+          echo "🎯 GTM ID updated: ${{ vars.GTM_ID }}"
+        fi
         if [[ -n "${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}" ]]; then
           echo "🌐 CloudFront cache invalidated for distribution: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}"
         fi
