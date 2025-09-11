@@ -33,7 +33,7 @@ jobs:
     - name: Update GTM ID
       if: ${{ vars.GTM_ID }}
       run: |        
-        sed -e "s/GTM_ID/${{ vars.GTM_ID }}/g" dist/index.html
+        sed -i "s/GTM_ID/${{ vars.GTM_ID }}/g" dist/index.html
       
     - name: Run tests (if available)
       run: npm test --if-present
